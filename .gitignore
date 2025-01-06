@@ -1,0 +1,2 @@
+# paths to ignore pushing to git
+node_modules/
