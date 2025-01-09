@@ -49,9 +49,18 @@ export const getWeather = async (req: Request, res: Response) => {
                 var latitude = location.lat
                 var longitude = location.lng
             }
+            else if (mapResponse.data.status === 'ZERO_RESULTS') {
+                // Google API error message
+                res.status(404)
+                res.json({
+                    error: 'Unable to Find Zip Code.'
+                })
+                console.error('Error calling Map API: ', 'Unable to Find Zip Code.')
+                return undefined
+            }
             else {
                 // Google API error message
-                res.status(mapResponse.status === undefined ? 404 : mapResponse.status)
+                res.status(404)
                 res.json({
                     error: mapResponse.data.status
                 })
@@ -62,7 +71,8 @@ export const getWeather = async (req: Request, res: Response) => {
         }
         else {
             // Google API error status code
-            res.status(mapResponse.status === undefined ? 404 : mapResponse.status)
+            console.log("Log 2")
+            res.status(404)
             res.json({
                 error: mapResponse.data.error_message
             })
@@ -72,6 +82,7 @@ export const getWeather = async (req: Request, res: Response) => {
     }
     catch (error: any) {
         res.status(error.status)
+        console.log("Log 3")
         res.json({
             error: error.response?.data?.reason
         })
@@ -96,10 +107,20 @@ export const getWeather = async (req: Request, res: Response) => {
         }
 
         var temperature = weatherRes.data.current?.temperature_2m
+        console.log(temperature)
+
+        if (temperature === '') {
+            res.status(404)
+            res.json({
+                error:  'No Temperature Data Found.'
+            })
+            console.error('Error calling Weather API: ', 'No Temperature Data Found.')
+            return undefined
+        }
     }
     catch (error: any) {
         // TODO: Catch error
-        res.status(error.status)
+        res.status(404)
         res.json({
             error: error.response?.data?.reason
         })
