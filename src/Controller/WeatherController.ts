@@ -23,7 +23,7 @@ export const getWeather = async (req: Request, res: Response) => {
     const url: string = 'https://maps.googleapis.com/maps/api/geocode/json'
     
     try {
-        if (zipcode.length !== 5) {
+        if (Number.isNaN(zipcode) || zipcode.length !== 5) {
             // Bad zipcode
             res.status(400)
             res.json({
